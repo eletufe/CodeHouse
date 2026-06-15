@@ -213,6 +213,13 @@ abstract class BaseFacebook
   protected $trustForwarded = false;
 
   /**
+   * The memoized current URL.
+   *
+   * @var string
+   */
+  protected $currentUrl;
+
+  /**
    * Initialize a Facebook Application.
    *
    * The configuration:
@@ -1181,14 +1188,16 @@ abstract class BaseFacebook
   }
 
   /**
-
-  /**
    * Returns the Current URL, stripping it of known FB parameters that should
    * not persist.
    *
    * @return string The current URL
    */
   protected function getCurrentUrl() {
+    if ($this->currentUrl !== null) {
+      return $this->currentUrl;
+    }
+
     $protocol = $this->getHttpProtocol() . '://';
     $host = $this->getHttpHost();
     $currentUrl = $protocol.$host.$_SERVER['REQUEST_URI'];
@@ -1206,7 +1215,7 @@ abstract class BaseFacebook
       }
 
       if (!empty($retained_params)) {
-        $query = '?'.implode($retained_params, '&');
+        $query = '?'.implode('&', $retained_params);
       }
     }
 
@@ -1218,7 +1227,7 @@ abstract class BaseFacebook
       ? ':' . $parts['port'] : '';
 
     // rebuild
-    return $protocol . $parts['host'] . $port . $parts['path'] . $query;
+    return $this->currentUrl = $protocol . $parts['host'] . $port . $parts['path'] . $query;
   }
 
   /**
