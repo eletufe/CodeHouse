@@ -199,6 +199,13 @@ abstract class BaseFacebook
   protected $accessToken = null;
 
   /**
+   * The cached current URL.
+   *
+   * @var string
+   */
+  protected $cachedCurrentUrl = null;
+
+  /**
    * Indicates if the CURL based @ syntax for file uploads is enabled.
    *
    * @var boolean
@@ -1189,6 +1196,10 @@ abstract class BaseFacebook
    * @return string The current URL
    */
   protected function getCurrentUrl() {
+    if ($this->cachedCurrentUrl !== null) {
+      return $this->cachedCurrentUrl;
+    }
+
     $protocol = $this->getHttpProtocol() . '://';
     $host = $this->getHttpHost();
     $currentUrl = $protocol.$host.$_SERVER['REQUEST_URI'];
@@ -1206,7 +1217,7 @@ abstract class BaseFacebook
       }
 
       if (!empty($retained_params)) {
-        $query = '?'.implode($retained_params, '&');
+        $query = '?'.implode('&', $retained_params);
       }
     }
 
@@ -1218,7 +1229,8 @@ abstract class BaseFacebook
       ? ':' . $parts['port'] : '';
 
     // rebuild
-    return $protocol . $parts['host'] . $port . $parts['path'] . $query;
+    return $this->cachedCurrentUrl =
+      $protocol . $parts['host'] . $port . $parts['path'] . $query;
   }
 
   /**
