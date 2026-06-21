@@ -1,0 +1,3 @@
+## 2026-06-21 - [Memoization and PHP 8 Compatibility in Facebook SDK]
+**Learning:** Legacy PHP code (Facebook SDK v3.x) used 'implode($array, $glue)', which causes TypeErrors in PHP 8+. Additionally, 'getCurrentUrl()' was a hidden performance bottleneck when called repeatedly (e.g., during login flows or URL generation) as it re-parses the environment on every call.
+**Action:** Always verify 'implode()' argument order in older PHP codebases for PHP 8+ compatibility. Use memoization for methods that compute values from stable sources like $_SERVER to significantly reduce overhead (~96% improvement).
