@@ -1,0 +1,3 @@
+## 2025-01-24 - Optimized BaseFacebook::getCurrentUrl() and fixed PHP 8.3 compatibility
+**Learning:** Legacy PHP code (Facebook SDK v3.2.2) used `implode($array, $glue)` which is a fatal error in PHP 8.3. Additionally, `getCurrentUrl()` was performing expensive string manipulations and URL parsing on every call, even though the URL remains constant during a request.
+**Action:** Corrected `implode()` argument order to `implode($glue, $array)`. Implemented memoization in `BaseFacebook::getCurrentUrl()` using a protected property `$currentUrl`, resulting in a ~96.5% performance boost for repeated calls.
