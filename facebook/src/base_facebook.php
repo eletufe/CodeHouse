@@ -174,6 +174,13 @@ abstract class BaseFacebook
   protected $appSecret;
 
   /**
+   * Cached value of the current URL.
+   *
+   * @var string
+   */
+  protected $currentUrl;
+
+  /**
    * The ID of the Facebook user, or 0 if the user is logged out.
    *
    * @var integer
@@ -1189,6 +1196,10 @@ abstract class BaseFacebook
    * @return string The current URL
    */
   protected function getCurrentUrl() {
+    if ($this->currentUrl !== null) {
+      return $this->currentUrl;
+    }
+
     $protocol = $this->getHttpProtocol() . '://';
     $host = $this->getHttpHost();
     $currentUrl = $protocol.$host.$_SERVER['REQUEST_URI'];
@@ -1206,7 +1217,7 @@ abstract class BaseFacebook
       }
 
       if (!empty($retained_params)) {
-        $query = '?'.implode($retained_params, '&');
+        $query = '?'.implode('&', $retained_params);
       }
     }
 
@@ -1218,7 +1229,8 @@ abstract class BaseFacebook
       ? ':' . $parts['port'] : '';
 
     // rebuild
-    return $protocol . $parts['host'] . $port . $parts['path'] . $query;
+    return $this->currentUrl =
+      $protocol . $parts['host'] . $port . $parts['path'] . $query;
   }
 
   /**
