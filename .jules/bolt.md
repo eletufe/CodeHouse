@@ -1,0 +1,3 @@
+## 2025-05-22 - PHP 8.3 implode compatibility and getCurrentUrl bottleneck
+**Learning:** PHP 8.3 strictly enforces the `($glue, $array)` argument order for `implode()`. Legacy code using `($array, $glue)` will throw a `TypeError`. Additionally, redundant complex calculations like those in `getCurrentUrl()` (parsing URLs, exploding query strings, iterating and re-imploding) can be a performance drain when called multiple times in a single request.
+**Action:** Always verify `implode` argument order in legacy PHP codebases when moving to PHP 8+. Implement memoization for methods like `getCurrentUrl()` that perform heavy parsing on static request data.
