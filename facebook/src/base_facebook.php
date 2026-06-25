@@ -186,6 +186,12 @@ abstract class BaseFacebook
   protected $signedRequest;
 
   /**
+   * Cached version of the current URL.
+   * @var string
+   */
+  protected $currentUrl;
+
+  /**
    * A CSRF state variable to assist in the defense against CSRF attacks.
    */
   protected $state;
@@ -1189,6 +1195,10 @@ abstract class BaseFacebook
    * @return string The current URL
    */
   protected function getCurrentUrl() {
+    if ($this->currentUrl !== null) {
+      return $this->currentUrl;
+    }
+
     $protocol = $this->getHttpProtocol() . '://';
     $host = $this->getHttpHost();
     $currentUrl = $protocol.$host.$_SERVER['REQUEST_URI'];
@@ -1206,7 +1216,7 @@ abstract class BaseFacebook
       }
 
       if (!empty($retained_params)) {
-        $query = '?'.implode($retained_params, '&');
+        $query = '?'.implode('&', $retained_params);
       }
     }
 
@@ -1218,7 +1228,8 @@ abstract class BaseFacebook
       ? ':' . $parts['port'] : '';
 
     // rebuild
-    return $protocol . $parts['host'] . $port . $parts['path'] . $query;
+    return $this->currentUrl =
+      $protocol . $parts['host'] . $port . $parts['path'] . $query;
   }
 
   /**
