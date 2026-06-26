@@ -1,0 +1,3 @@
+## 2025-01-24 - [Facebook SDK] PHP 8.3 Compatibility and Memoization
+**Learning:** Legacy PHP code (like Facebook SDK v3.2.2) often uses `implode($array, $glue)`, which was deprecated and finally removed in PHP 8.0. In PHP 8.3, this results in a Fatal Error. Additionally, complex URL reconstruction methods like `getCurrentUrl()` are frequently called but rarely change within a single request, making them ideal candidates for memoization.
+**Action:** Always check `implode()` calls when working with legacy PHP in PHP 8+ environments. Implement simple property-based memoization for expensive environment-dependent methods that are static within a request.
