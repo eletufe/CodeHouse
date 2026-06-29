@@ -1,0 +1,3 @@
+## 2025-01-24 - PHP 8.3 implode compatibility and memoization
+**Learning:** In PHP 8+, `implode($array, $glue)` is no longer supported and throws a `TypeError`. The correct order is `implode($glue, $array)`. Legacy codebases like Facebook PHP SDK v3.2.2 may still use the old signature. Additionally, `BaseFacebook::getCurrentUrl()` is called multiple times in methods like `getLoginStatusUrl()`, making it a prime candidate for memoization.
+**Action:** Always check `implode()` argument order when working with legacy PHP code on PHP 8+. Apply memoization to frequently called methods that perform redundant string manipulations or environment lookups.
