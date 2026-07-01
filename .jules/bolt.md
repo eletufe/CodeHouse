@@ -1,0 +1,3 @@
+## 2026-07-01 - Memoization in Facebook SDK
+**Learning:** BaseFacebook::getCurrentUrl() was being called multiple times per request (e.g., in getLoginStatusUrl, getLoginUrl, getLogoutUrl), leading to redundant parsing of $_SERVER['REQUEST_URI'] and multiple calls to getHttpProtocol() and getHttpHost(). Memoizing this value significantly reduces execution time. Also discovered that PHP 8.3 requires the glue argument in implode() to be the first argument, which was causing a Fatal Error in the original code.
+**Action:** Always check for repeated calls to methods that compute values from superglobals like $_SERVER, as these are prime candidates for memoization. Ensure compatibility with PHP 8.3 by strictly following the (glue, array) order for implode().
