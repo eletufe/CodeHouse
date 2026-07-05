@@ -1,0 +1,3 @@
+## 2024-03-22 - Optimized getCurrentUrl in Facebook SDK
+**Learning:** `BaseFacebook::getCurrentUrl()` is called multiple times during the lifecycle of various SDK methods (like `getLoginStatusUrl()`), but its value remains constant within a single request. Memoizing it provides a significant performance boost. Also, PHP 8.3 strictly requires the `($glue, $array)` argument order for `implode()`.
+**Action:** Always memoize idempotent method calls that involve string manipulation or server variable access when called in loops or multiple times. Ensure `implode()` follows the standard argument order for PHP 8+ compatibility.
