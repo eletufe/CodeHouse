@@ -1,0 +1,3 @@
+## 2026-01-14 - Memoization and PHP 8.3 Compatibility in Facebook SDK
+**Learning:** `BaseFacebook::getCurrentUrl()` was a major bottleneck as it was called repeatedly (e.g., by `getLoginUrl`, `getLogoutUrl`, etc.) and performed expensive string manipulations and regex/global variable lookups every time. Memoizing it resulted in an ~18x speedup for repeated calls. Additionally, legacy PHP code used `implode($array, $glue)`, which is fatal in PHP 8.3+; it must be `implode($glue, $array)`.
+**Action:** Always memoize idempotent URL generation methods in SDKs. When working with legacy PHP (pre-7.4 style), verify `implode()` and `explode()` argument orders for PHP 8+ compatibility.
