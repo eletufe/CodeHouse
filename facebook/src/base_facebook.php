@@ -213,6 +213,13 @@ abstract class BaseFacebook
   protected $trustForwarded = false;
 
   /**
+   * Cached value of the current URL.
+   *
+   * @var string
+   */
+  protected $currentUrl = null;
+
+  /**
    * Initialize a Facebook Application.
    *
    * The configuration:
@@ -1181,14 +1188,19 @@ abstract class BaseFacebook
   }
 
   /**
-
-  /**
    * Returns the Current URL, stripping it of known FB parameters that should
    * not persist.
+   *
+   * This method uses memoization to avoid redundant and expensive URL
+   * recalculation during the lifecycle of a single request.
    *
    * @return string The current URL
    */
   protected function getCurrentUrl() {
+    if ($this->currentUrl !== null) {
+      return $this->currentUrl;
+    }
+
     $protocol = $this->getHttpProtocol() . '://';
     $host = $this->getHttpHost();
     $currentUrl = $protocol.$host.$_SERVER['REQUEST_URI'];
@@ -1206,7 +1218,8 @@ abstract class BaseFacebook
       }
 
       if (!empty($retained_params)) {
-        $query = '?'.implode($retained_params, '&');
+        // Fix for PHP 8+ strict implode() argument order compatibility
+        $query = '?'.implode('&', $retained_params);
       }
     }
 
@@ -1217,8 +1230,9 @@ abstract class BaseFacebook
        ($protocol === 'https://' && $parts['port'] !== 443))
       ? ':' . $parts['port'] : '';
 
-    // rebuild
-    return $protocol . $parts['host'] . $port . $parts['path'] . $query;
+    // rebuild and cache the result
+    $this->currentUrl = $protocol . $parts['host'] . $port . $parts['path'] . $query;
+    return $this->currentUrl;
   }
 
   /**
@@ -1325,6 +1339,7 @@ abstract class BaseFacebook
     $this->accessToken = null;
     $this->signedRequest = null;
     $this->user = null;
+    $this->currentUrl = null;
     $this->clearAllPersistentData();
 
     // Javascript sets a cookie that will be used in getSignedRequest that we
